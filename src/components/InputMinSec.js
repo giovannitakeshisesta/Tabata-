@@ -1,6 +1,6 @@
 import React from 'react'
 
-export default function InputMinSec({ register, title, name1, required1, name2, required2 }) {
+export default function InputMinSec({ register, title, name1, name2}) {
     return (
         <div className='flex justify-between items-center'>
             {/* TITLE */}

@@ -12,12 +12,15 @@ export default function Tabata() {
     const [prepInput, setPrepInput] = useState(0);
     const [workInput, setWorkInput] = useState(0);
     const [restInput, setRestInput] = useState(0);
+    const [cyclesInput, setCyclesInput] = useState(0);
     const [roundsInput, setRoundsInput] = useState(0);
+    const [restRoundsInput, setRestRoundInput] = useState(0);
     const [inputInfo, setInputInfo] = useState({});
     const [totalTime, setTotalTime] = useState(0);
 
     // counters
     const [counter, setCounter] = useState(0);
+    const [cyclesCounter, setCyclesCounter] = useState(0);
     const [roundsCounter, setRoundsCounter] = useState(0);
     const [totalTimeCounter, setTotalTimeCounter] = useState(0);
     const [message, setMessage] = useState("");
@@ -42,16 +45,18 @@ export default function Tabata() {
 
     // use ref
     const stateRef = useRef([]);
-    stateRef.current[0] = roundsCounter;
+    stateRef.current[0] = cyclesCounter;
     stateRef.current[1] = isPaused;
     stateRef.current[2] = counter;
     stateRef.current[3] = totalTimeCounter;
+    stateRef.current[4] = roundsCounter;
 
     // -------------- preparacion --------------
     function pre() {
         setIsPaused(1)
         setMessage("PREPARE")
         setCounter(prepInput)
+        
         let interv = setInterval(() => {
             //if start or resume are pressed
             if (stateRef.current[1] === 1) {
@@ -60,31 +65,46 @@ export default function Tabata() {
                 //if prepare time is finish, execute work()
                 if (stateRef.current[2] === 1) {
                     clearInterval(interv)
+                    setRoundsCounter((prevCounter) => prevCounter + 1)
                     work()
                 }
             }
         }, 1000);
     }
 
+
     // -------------- work --------------
     function work() {
         setMessage("WORK")
-        setRoundsCounter((prevCounter) => prevCounter + 1)
+        setCyclesCounter((prevCounter) => prevCounter + 1)
         setCounter(workInput)
         let interv = setInterval(() => {
             //if start or resume are pressed
             if (stateRef.current[1] === 1) {
                 setCounter((prevCounter) => prevCounter - 1)
                 setTotalTimeCounter((prevCounter) => prevCounter - 1)
-                //if  work time is finish , execute rest()
+                //if  work time is finish 
                 if (stateRef.current[2] === 1) {
-                    // if rounds are completed, stop the counter
-                    if (stateRef.current[0] === roundsInput) {
-                        clearInterval(interv)
-                        setMessage("FINISH")
-                        setIsPaused(3)
-                        setRoundsCounter(0)
-                        setTotalTimeCounter(totalTime)
+                    // if  cycles are completed,  
+                    if (stateRef.current[0] === cyclesInput) {
+                        setCyclesCounter(0)
+
+                        // if rounds are completed
+                        if (stateRef.current[4] === roundsInput){
+
+                            clearInterval(interv)
+                            setMessage("FINISH")
+                            setIsPaused(3)
+                            setRoundsCounter(0)
+                            setTotalTimeCounter(totalTime)
+                        } else {
+                            //if rounds are not completed
+                            setRoundsCounter((prevCounter) => prevCounter + 1)
+                            clearInterval(interv)
+                            restRound()
+                        }
+
+                    //if  work time is finish & rounds are not completed
                     } else {
                         clearInterval(interv)
                         rest()
@@ -111,9 +131,26 @@ export default function Tabata() {
         }, 1000);
     }
 
+    function restRound() {
+        setMessage("REST ROUND")
+        setCounter(restRoundsInput)
+        let interv = setInterval(() => {
+            //if start or resume are pressed
+            if (stateRef.current[1] === 1) {
+                setCounter((prevCounter) => prevCounter - 1)
+                setTotalTimeCounter((prevCounter) => prevCounter - 1)
+                //if  rest time is finish , execute work()
+                if (stateRef.current[2] === 1) {
+                    clearInterval(interv)
+                    work()
+                }
+            }
+        }, 1000);
+    }
+
     return (
         <div className='h-screen w-screen bg-gray-900'>
-            <Nav   />
+            <Nav />
 
             <div className='sm:w-screen h-[calc(100vh-64px)] flex '>
                 {!showForm ?
@@ -122,19 +159,21 @@ export default function Tabata() {
                         setPrepInput={setPrepInput}
                         setWorkInput={setWorkInput}
                         setRestInput={setRestInput}
+                        setCyclesInput={setCyclesInput}
                         setRoundsInput={setRoundsInput}
                         setShowForm={setShowForm}
                         setTotalTime={setTotalTime}
                         setTotalTimeCounter={setTotalTimeCounter}
                         setInputInfo={setInputInfo}
+                        setRestRoundInput={setRestRoundInput}
                     />
                     :
                     <CountdownView
                         totalTimeCounter={totalTimeCounter}
                         message={message}
                         counter={counter}
+                        cyclesCounter={cyclesCounter}
                         roundsCounter={roundsCounter}
-                        roundsInput={roundsInput}
                         inputInfo={inputInfo}
                         isPaused={isPaused}
                         switchtBtn={switchtBtn}

@@ -7,8 +7,8 @@ export default function CountdownView({
     totalTimeCounter,
     message,
     counter,
+    cyclesCounter,
     roundsCounter,
-    roundsInput,
     isPaused,
     switchtBtn,
     inputInfo }) {
@@ -28,7 +28,9 @@ export default function CountdownView({
                 <InputIInfo title="Prep" data={inputInfo.prep} />
                 <InputIInfo title="Work" data={inputInfo.work} />
                 <InputIInfo title="Rest" data={inputInfo.rest} />
+                <InputIInfo title="Cycles" data={inputInfo.cycles} />
                 <InputIInfo title="Rounds" data={inputInfo.rounds} />
+                <InputIInfo title="REST Rounds" data={inputInfo.restRound} />
             </div>
 
             <div className='bg-gray-200 rounded-lg  leading-none p-3  my-2'>
@@ -42,8 +44,8 @@ export default function CountdownView({
             </div>
 
             <div className='bg-white rounded-lg leading-none p-3 my-2'>
-                <p >CYCLE </p>
-                <p className='text-5xl' >{roundsCounter}/{roundsInput}</p>
+                <p >STATUS</p>
+                <p className='text-5xl' >R:{roundsCounter}/{inputInfo.rounds}  C:{cyclesCounter}/{inputInfo.cycles}</p>
             </div>
 
             {isPaused === 0 ?
