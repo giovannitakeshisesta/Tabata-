@@ -1,11 +1,11 @@
 import React from 'react'
 
-export default function BtnTabata({fn, text , textcolor,borderColor}) {
+export default function BtnTabata({ fn, text, myClass }) {
     return (
         <button
             className={`bg-transparent py-2 px-4 border font-semibold   rounded my-5
             hover:bg-gray-700 
-             ${borderColor} ${textcolor}`}
+             ${myClass}  `}
 
             onClick={fn}
         >{text}
@@ -13,4 +13,4 @@ export default function BtnTabata({fn, text , textcolor,borderColor}) {
     )
 }
 
-//  hover:bg-gray-700  
+ 

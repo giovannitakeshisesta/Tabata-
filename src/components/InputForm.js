@@ -4,7 +4,7 @@ import BtnTabata from './BtnTabata';
 import InputCycleRound from './InputCycleRound';
 import InputMinSec from './InputMinSec';
 
-export default function InputForm({ setTotalTime, setTotalTimeCounter, setPrepInput, setWorkInput, setRestInput,setRestRoundInput, setCyclesInput,setRoundsInput, setShowForm, setInputInfo }) {
+export default function InputForm({ formSubmit}) {
     const { register, handleSubmit } = useForm();
     const onSubmit = data => {
         console.log(data);
@@ -15,17 +15,8 @@ export default function InputForm({ setTotalTime, setTotalTimeCounter, setPrepIn
         let cycles = Number(data.cycles)
         let rounds = Number(data.rounds)
         let totalTime = prep + ((((work + rest) * cycles)- rest +restRound) * rounds) - restRound
-        setPrepInput(prep)
-        setWorkInput(work)
-        setRestInput(rest)
-        setRestRoundInput(restRound)
-        setCyclesInput(cycles)
-        setRoundsInput(rounds)
-        setShowForm(true)
-        setTotalTime(totalTime)
-        setTotalTimeCounter(totalTime)
-        setInputInfo({ prep, work, rest, cycles,rounds,restRound})
-
+        let allFormInfo = { prep, work, rest, cycles,rounds,restRound,totalTime}
+         formSubmit(allFormInfo)
     }
 
     return (

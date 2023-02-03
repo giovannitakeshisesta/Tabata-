@@ -3,7 +3,7 @@ import Tabata from './components/Tabata';
 
 function App() {
   return (
-    <div>
+    <div className='   '>
       <Tabata />
     </div>
   );
