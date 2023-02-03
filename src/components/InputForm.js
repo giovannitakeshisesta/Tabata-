@@ -35,7 +35,7 @@ export default function InputForm({ formSubmit}) {
                 <InputCycleRound title='ROUNDS' name1="rounds" register={register} />
                 <InputMinSec title='REST ROUND' name1="restRoundMin" name2="restRoundSec" register={register} />
 
-                <BtnTabata text="OK!" textcolor="text-blue-700" borderColor="border-blue-500" />
+                <BtnTabata text="OK!" myClass="text-blue-700  border-blue-500" />
             </form>
         </div>
     )

@@ -1,12 +1,13 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import CountdownView from './CountdownView';
 import InputForm from './InputForm';
 import Nav from './Nav';
 
+
 export default function Tabata() {
 
-    // view
     const [showTabata, setShowTabata] = useState(false)
+    const [mute, setMute] = useState(false)
 
     // form input
     const [prepInput, setPrepInput] = useState(0);
@@ -25,14 +26,14 @@ export default function Tabata() {
     const [totalTimeCounter, setTotalTimeCounter] = useState(0);
     const [message, setMessage] = useState("");
 
-    // IsPaused status: 
+    // -------------- IsPaused status: --------------
     // 0 shows start btn   time is not running -> onclick : start  & setIsPaused(1)
     // 1 shows pause btn   time is running     -> onclick : pause  & setIsPaused(2)
     // 2 shows resume btn  time is not running -> onclick : resume & setIsPaused(1)
     // 3 shows restart btn time is not running -> onclick : start
     const [isPaused, setIsPaused] = useState(0);
 
-    // When buttons are pressed:
+    // -------- When buttons are pressed: -----------
     const switchtBtn = () => {
         switch (stateRef.current[1]) {
             case 0: setIsPaused(1); pre(); break;
@@ -43,16 +44,18 @@ export default function Tabata() {
         }
     }
 
-    // use ref
+    //-------------- use ref --------------
     const stateRef = useRef([]);
     stateRef.current[0] = cyclesCounter;
     stateRef.current[1] = isPaused;
     stateRef.current[2] = counter;
     stateRef.current[3] = totalTimeCounter;
     stateRef.current[4] = roundsCounter;
+    stateRef.current[5] = mute;
 
     // -------------- preparacion --------------
     function pre() {
+
         setIsPaused(1)
         setMessage("PREPARE")
         setCounter(prepInput)
@@ -138,15 +141,34 @@ export default function Tabata() {
             if (stateRef.current[1] === 1) {
                 setCounter((prevCounter) => prevCounter - 1)
                 setTotalTimeCounter((prevCounter) => prevCounter - 1)
-                //if  rest time is finish , execute work()
+
+                //if  restround time is almost finish , say Get ready for a new round
+                if (stateRef.current[2] === 3) setMessage("Get ready for a new round")
+
+                //if  restround time is finish , execute work()
                 if (stateRef.current[2] === 1) {
                     clearInterval(interv)
+                    setMessage("new round")
                     work()
                 }
             }
         }, 1000);
     }
 
+    // -------------- voice messages --------------
+    useEffect(() => {
+        if (mute) {
+            let utterance = new SpeechSynthesisUtterance(message);
+            utterance.lang = 'en-US';
+            speechSynthesis.speak(utterance);
+        }
+    }, [message, mute])
+
+    function muteFunc() {
+        return stateRef.current[5] ? setMute(false) : setMute(true)
+    }
+
+    // -------------- data to components --------------
     function formSubmit(info) {
         setPrepInput(info.prep)
         setWorkInput(info.work)
@@ -164,9 +186,12 @@ export default function Tabata() {
         totalTimeCounter, counter, cyclesCounter, roundsCounter,
         inputInfo, message, isPaused, switchtBtn
     }
+
+    // -------------- render --------------
     return (
-        <div >
-            <Nav />
+        <div className='bg-gray-900'>
+
+            <Nav muteFunc={muteFunc} />
 
             <div className='sm:w-screen h-[calc(100vh-64px)] flex '>
                 {!showTabata ?
@@ -175,6 +200,7 @@ export default function Tabata() {
                     <CountdownView data={dataToCountdownView} />
                 }
             </div>
+
         </div>
     )
 }
