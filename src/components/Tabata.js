@@ -6,7 +6,7 @@ import Nav from './Nav';
 export default function Tabata() {
 
     // view
-    const [showForm, setShowForm] = useState(false)
+    const [showTabata, setShowTabata] = useState(false)
 
     // form input
     const [prepInput, setPrepInput] = useState(0);
@@ -56,7 +56,7 @@ export default function Tabata() {
         setIsPaused(1)
         setMessage("PREPARE")
         setCounter(prepInput)
-        
+
         let interv = setInterval(() => {
             //if start or resume are pressed
             if (stateRef.current[1] === 1) {
@@ -71,7 +71,6 @@ export default function Tabata() {
             }
         }, 1000);
     }
-
 
     // -------------- work --------------
     function work() {
@@ -90,7 +89,7 @@ export default function Tabata() {
                         setCyclesCounter(0)
 
                         // if rounds are completed
-                        if (stateRef.current[4] === roundsInput){
+                        if (stateRef.current[4] === roundsInput) {
 
                             clearInterval(interv)
                             setMessage("FINISH")
@@ -104,7 +103,7 @@ export default function Tabata() {
                             restRound()
                         }
 
-                    //if  work time is finish & rounds are not completed
+                        //if  work time is finish & rounds are not completed
                     } else {
                         clearInterval(interv)
                         rest()
@@ -130,7 +129,7 @@ export default function Tabata() {
             }
         }, 1000);
     }
-
+    // -------------- rest round--------------
     function restRound() {
         setMessage("REST ROUND")
         setCounter(restRoundsInput)
@@ -148,36 +147,32 @@ export default function Tabata() {
         }, 1000);
     }
 
+    function formSubmit(info) {
+        setPrepInput(info.prep)
+        setWorkInput(info.work)
+        setRestInput(info.rest)
+        setCyclesInput(info.cycles)
+        setRoundsInput(info.rounds)
+        setRestRoundInput(info.restRound)
+        setTotalTime(info.totalTime)
+        setTotalTimeCounter(info.totalTime)
+        setInputInfo(info)
+        setShowTabata(true)
+    }
+
+    let dataToCountdownView = {
+        totalTimeCounter, counter, cyclesCounter, roundsCounter,
+        inputInfo, message, isPaused, switchtBtn
+    }
     return (
-        <div className='h-screen w-screen bg-gray-900'>
+        <div >
             <Nav />
 
             <div className='sm:w-screen h-[calc(100vh-64px)] flex '>
-                {!showForm ?
-
-                    <InputForm
-                        setPrepInput={setPrepInput}
-                        setWorkInput={setWorkInput}
-                        setRestInput={setRestInput}
-                        setCyclesInput={setCyclesInput}
-                        setRoundsInput={setRoundsInput}
-                        setShowForm={setShowForm}
-                        setTotalTime={setTotalTime}
-                        setTotalTimeCounter={setTotalTimeCounter}
-                        setInputInfo={setInputInfo}
-                        setRestRoundInput={setRestRoundInput}
-                    />
+                {!showTabata ?
+                    <InputForm formSubmit={formSubmit} />
                     :
-                    <CountdownView
-                        totalTimeCounter={totalTimeCounter}
-                        message={message}
-                        counter={counter}
-                        cyclesCounter={cyclesCounter}
-                        roundsCounter={roundsCounter}
-                        inputInfo={inputInfo}
-                        isPaused={isPaused}
-                        switchtBtn={switchtBtn}
-                    />
+                    <CountdownView data={dataToCountdownView} />
                 }
             </div>
         </div>
